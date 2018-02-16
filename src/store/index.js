@@ -11,6 +11,8 @@ const store = {
         currentCity: '',
         userCities: [],
         botCities: [],
+        whoWonMessage: '',
+        errorMessage: '',
     },
     mutations: {
         cityConfirmation(state, payLoad) {
@@ -34,6 +36,12 @@ const store = {
         clearUserAndBotCitiesLists(state) {
             state.userCities = [];
             state.botCities = [];
+        },
+        changeWhoWonMessage(state, msg) {
+            state.whoWonMessage = msg;
+        },
+        setErrorMessage(state, errorMsg) {
+            state.errorMessage = errorMsg;
         },
     },
 };

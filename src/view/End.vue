@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+      <h1>{{this.$store.state.whoWonMessage}}</h1>
       <div class="buttons-container">
             <button v-on:click="redirect('/game')">New Game</button>
             <button v-on:click="redirect('/')">Menu</button>

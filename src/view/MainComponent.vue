@@ -1,25 +1,29 @@
 <template>
-  <div class="container">
-      <div class="game-process-info">
-            <div>
-                <h1 v-if="!showBotAnswer && isThisTurnFirst === false">Вы назвали: {{this.$store.state.currentCity}}</h1>
-                <h1 v-if="showBotAnswer && isThisTurnFirst === false">Бот назвал: {{this.$store.state.currentCity}}</h1>
+    <div class="container">
+        <div class="game-process-info-container">
+            <div class="error-message-container">
+                <h4 v-if="isErrorOccurred" class="error-message">{{this.$store.state.errorMessage}}</h4>    
             </div>
-            <div class="user-input" v-if="usersTurn"> 
-                <button  class="speak-button" v-on:click="startUserSpeechRecognition()">
-                    <img v-bind:src="addPathToMicroIcon()">
-                </button>
-                <input v-model="usersCityName" placeholder="Введите название города">
-                <button v-on:click="confirmUserInput()">Подтвердить</button>
+            <div class="game-process-info">
+                    <div>
+                        <h1 v-if="!showBotAnswer && isThisTurnFirst === false">Вы назвали: {{this.$store.state.currentCity}}</h1>
+                        <h1 v-if="showBotAnswer && isThisTurnFirst === false">Бот назвал: {{this.$store.state.currentCity}}</h1>
+                    </div>
+                    <div class="user-input" v-if="usersTurn"> 
+                        <button  class="speak-button" v-on:click="startUserSpeechRecognition()">
+                            <img v-bind:src="addPathToMicroIcon()">
+                        </button>
+                        <input v-model="usersCityName" placeholder="Введите название города">
+                        <button v-on:click="confirmUserInput()">Подтвердить</button>
+                    </div>
+                    <h1 v-else>Бот ходит</h1>
             </div>
-            <h1 v-else>Бот ходит</h1>
-      </div>
+        </div>
       <div>
         <div id="map"></div>
-        <button v-on:click="endGame()" class="end-game-button">Завершить игру</button>
+        <button v-on:click="userDefeated()" class="end-game-button">Сдаться</button>
       </div>
-
-  </div>
+    </div>
 </template>
 
 
@@ -44,11 +48,13 @@ export default {
             showBotAnswer: false,
             usersTurn: true,
             myMap: {},
+            isErrorOccurred: false,
         }
     },
     methods: {
-        endGame() {
+        userDefeated() {
             this.$store.commit('initializingState');
+            this.$store.commit('changeWhoWonMessage', 'Вы проиграли!!');
             router.push('/end');
         },
         placeCityMark(cityName) {
@@ -68,7 +74,6 @@ export default {
         },
         confirmUserInput() {
             if(this.isThisTurnFirst) {
-                this.isThisTurnFirst = false;
                 this.checkHasCityAlreadyBeenNamed();
             } else {
                 this.checkIsFirstLetterMatch();
@@ -86,7 +91,11 @@ export default {
             if(usersFirstLetter === neededLetter) {
                 this.checkHasCityAlreadyBeenNamed();
             } else {
-                alert('Название города начинается не на ту букву');
+                this.$store.commit('setErrorMessage', 'Название города начинается не на ту букву');
+                this.isErrorOccurred = true;
+                setTimeout(() => {
+                    this.isErrorOccurred = false;
+                }, 4000);
             }
         },
         checkHasCityAlreadyBeenNamed() {
@@ -102,7 +111,11 @@ export default {
             });
 
             if (wasCityMentioned) {
-                alert('Город уже был упомянут');
+                this.$store.commit('setErrorMessage', 'Город уже был упомянут');
+                this.isErrorOccurred = true;
+                setTimeout(() => {
+                    this.isErrorOccurred = false;
+                }, 4000);
                 return; 
             } else {
                 this.checkIsCityExists();
@@ -120,6 +133,7 @@ export default {
                 }
             });
             if (isCityExist) {
+                this.isThisTurnFirst = false;
                 this.placeCityMark(this.usersCityName);
                 this.showBotAnswer = false;
                 this.$store.commit('cityConfirmation', {city: this.usersCityName, id: idOfCity});
@@ -127,7 +141,11 @@ export default {
                 this.usersTurn = false;
                 this.botAnswer();
             } else {
-                alert('Такого города не существует или его нет у нас в базе');
+                this.$store.commit('setErrorMessage', 'Такого города не существует или его нет у нас в базе');
+                this.isErrorOccurred = true;
+                setTimeout(() => {
+                    this.isErrorOccurred = false;
+                }, 4000);
             }
         },
         addPathToMicroIcon() {
@@ -158,6 +176,9 @@ export default {
             let cityToAnswer = '';
             setTimeout(() => {
                 let returnedObject = findMatchWordToAnswer();
+                if (returnedObject === true) {
+                    this.botDefeated();
+                }
                 let indexOfMatchCity = returnedObject.id;
                 cityToAnswer = returnedObject.item.toLowerCase();
                 this.placeCityMark(cityToAnswer);
@@ -170,6 +191,7 @@ export default {
 
 
             function findMatchWordToAnswer() {
+                let isBotDefeated = true;
                 for(let i=0; i<citiesArray.length; i++) {
                     if (citiesArray[i][0] === lastCharOfTheCityName) {
                         return {
@@ -178,7 +200,12 @@ export default {
                         };
                     }
                 }
+                return isBotDefeated;
             }
+        },
+        botDefeated() {
+            this.$store.commit('changeWhoWonMessage', 'Вы победили!!');
+            router.push('/end');
         }
     }
 }
@@ -188,10 +215,25 @@ export default {
 
 <style scoped>
 
+.error-message-container {
+    height: 200px;
+    display: flex;
+    align-items: center;
+}
+
+.game-process-info-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.error-message {
+    color: red;
+    width: 300px;
+}
+
 .user-input {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
     align-items: center;
 }
 
@@ -263,7 +305,9 @@ button:hover {
 }
 
 input {
-    height: 30px;
+    height: 36px;
+    border-radius: 8px;
+    font-size: 16px;
 }
 
 </style>
