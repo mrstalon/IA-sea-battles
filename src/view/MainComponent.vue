@@ -6,8 +6,8 @@
             </div>
             <div class="game-process-info">
                     <div>
-                        <h1 v-if="!showBotAnswer && isThisTurnFirst === false">Вы назвали: {{this.$store.state.currentCity}}</h1>
-                        <h1 v-if="showBotAnswer && isThisTurnFirst === false">Бот назвал: {{this.$store.state.currentCity}}</h1>
+                        <h3 v-if="!showBotAnswer && isThisTurnFirst === false">Вы назвали: {{this.$store.state.currentCity}}</h3>
+                        <h3 v-if="showBotAnswer && isThisTurnFirst === false">Бот назвал: {{this.$store.state.currentCity}}</h3>
                     </div>
                     <div class="user-input" v-if="usersTurn"> 
                         <button  class="speak-button" v-on:click="startUserSpeechRecognition()">
@@ -16,7 +16,7 @@
                         <input v-model="usersCityName" placeholder="Введите название города">
                         <button v-on:click="confirmUserInput()">Подтвердить</button>
                     </div>
-                    <h1 v-else>Бот ходит</h1>
+                    <h3 v-else class="bot-turn-message">Бот ходит</h3>
             </div>
         </div>
       <div>
@@ -215,15 +215,21 @@ export default {
 
 <style scoped>
 
+.bot-turn-message {
+    margin: 0px;
+}
+
 .error-message-container {
-    height: 200px;
+    height: 50px;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .game-process-info-container {
     display: flex;
     flex-direction: column;
+    height: 145px;
 }
 
 .error-message {
@@ -239,7 +245,7 @@ export default {
 
 button {
     display: inline-block;
-    height: 45px;
+    height: 40px;
     width: 100px;
     font-size: 80%;
     color: rgba(255,255,255,.9);
@@ -276,21 +282,21 @@ button:hover {
 }
 
 #map {
-    width: 300px;
-    height: 300px;
-    margin-top: 24px;
+    width: 600px;
+    height: 270px;
+    margin-top: 8px;
 }
 
 .container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-evenly;
 }
 
 .game-process-info {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    align-items: center;
 }
 
 .container > :last-child {
