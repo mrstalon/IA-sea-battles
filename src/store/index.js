@@ -1,48 +1,95 @@
-import citiesList from './citiesList';
-
-const cities = citiesList.map((item) => {
-    return item.toLowerCase();
-});
-
 const store = {
     state: {
-        cities,
-        mentionedСities: [''],
-        currentCity: '',
-        userCities: [],
-        botCities: [],
-        whoWonMessage: '',
-        errorMessage: '',
+        firstPlayerField: [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 1, 1, 0, 0, 1, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 1, 1, 0, 0, 0],
+            [1, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+            [1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        ],
+        secondPlayerField: [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 1, 1, 0, 0, 1, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 1, 1, 0, 0, 0],
+            [1, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+            [1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        ],
+        algorithms: [
+            'Алгоритм Васи',
+            'Мега ИИ',
+            'Разработка СКАЙНЕТ',
+        ],
+        firstUserChoosedAlgorithm: '',
+        secondUserChoosedAlgorithm: '',
+        whichPlayerWon: '',
     },
     mutations: {
-        cityConfirmation(state, payLoad) {
-            state.cities.splice(payLoad.id, 1);
-            state.mentionedСities.push(payLoad.city);
-            state.currentCity = payLoad.city.toLowerCase();
+        changeWhoWon(state, payload) {
+            state.whichPlayerWon = payload;
         },
-        initializingState(state) {
-            state.cities = citiesList.map((item) => {
-                return item.toLowerCase();
-            });
-            state.mentionedСities = [''];
-            state.currentCity = '';
+        firstUserShoot(state, payload) {
+            let x = payload[0];
+            let y = payload[1];
+
+            if (state.secondPlayerField[x][y] === 1) {
+                state.secondPlayerField[x].splice(y, 1, 2);
+            } else {
+                state.secondPlayerField[x].splice(y, 1, '-');
+            }
         },
-        addCityToUsersCities(state, city) {
-            state.userCities.push(city);
+        secondUserShoot(state, payload) {
+            let x = payload[0];
+            let y = payload[1];
+
+            if (state.firstPlayerField[x][y] === 1) {
+                console.log('hit');
+                state.firstPlayerField[x].splice(y, 1, 2);
+            } else {
+                state.firstPlayerField[x].splice(y, 1, '-');
+            }
         },
-        addCityToBotCities(state, city) {
-            state.botCities.push(city);
+        changeFirstUserAlgorithm(state, payload) {
+            state.firstUserChoosedAlgorithm = payload;
         },
-        clearUserAndBotCitiesLists(state) {
-            state.userCities = [];
-            state.botCities = [];
+        changeSecondUserAlgorithm(state, payload) {
+            state.secondUserChoosedAlgorithm = payload;
         },
-        changeWhoWonMessage(state, msg) {
-            state.whoWonMessage = msg;
-        },
-        setErrorMessage(state, errorMsg) {
-            state.errorMessage = errorMsg;
-        },
+        setGameFieldsToInitialState(state) {
+            state.firstPlayerField = [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 1, 1, 1, 0, 0, 1, 0, 1, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 1, 0, 1, 1, 0, 0, 0],
+                [1, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                [1, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+            ];
+            state.secondPlayerField = [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 1, 1, 1, 0, 0, 1, 0, 1, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 1, 0, 1, 1, 0, 0, 0],
+                [1, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                [1, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+            ];
+        }
     },
 };
 

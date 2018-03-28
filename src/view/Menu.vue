@@ -1,33 +1,50 @@
 <template>
   <div class="container">
-      <header>
-          <h1>Города</h1>
-          <button class="start-game-button" v-on:click="redirect('game')">Играть</button>
-      </header>
-      <main>
-          <h2>Правила игры</h2>
-          <p>
-            Города — игра для нескольких (двух или более) человек, в которой каждый участник
-            в свою очередь называет реально существующий город любой страны, название которого
-            начинается на ту букву, которой оканчивается название предыдущего участника.
-          </p>
-          <h3>Проблемные буквы</h3>
-          <p>
-            Обычно исключения составляют названия, оканчивающиеся на твёрдый и мягкий знаки,
-            а также буквы «Ы» и «Й»: в таких случаях участник называет город на предпоследнюю букву.
-          </p>
-      </main>
+      <h1>Выберите алгоритмы для сражения</h1>
+      <button v-on:click="redirectToGame">Играть</button>
+      <div class="chooser-container">
+          <div class="first-player-container">
+              <h3>Первый игрок</h3>
+              <select v-model="firstUserAlgorithm">
+                  <option v-for="(option, index) in this.$store.state.algorithms"
+                    :key="index">
+                    {{option}}
+                    </option>
+              </select>
+              <h3 v-if="firstUserAlgorithm">Вы выбрали - {{firstUserAlgorithm}}</h3>
+          </div>
+          <div class="second-player-container">
+            <h3>Второй игрок</h3>
+            <select v-model="secondUserAlgorithm">
+                <option v-for="(option, index) in this.$store.state.algorithms"
+                    :key="index">
+                    {{option}}
+                </option>
+            </select>
+            <h3 v-if="secondUserAlgorithm">Вы выбрали - {{secondUserAlgorithm}}</h3>
+          </div>
+      </div>
   </div>
 </template>
 
 
 <script>
-import {router} from '../main.js';
+import {router} from '../main';
 
 export default {
+    beforeDestroy() {
+        this.$store.commit('changeFirstUserAlgorithm', this.firstUserAlgorithm);
+        this.$store.commit('changeSecondUserAlgorithm', this.secondUserAlgorithm);
+    },
+    data() {
+        return {
+            firstUserAlgorithm: this.$store.state.firstUserChoosedAlgorithm,
+            secondUserAlgorithm: this.$store.state.secondUserChoosedAlgorithm,
+        }
+    },
     methods: {
-        redirect(url) {
-            router.push(url);
+        redirectToGame() {
+            router.push('/game');
         }
     }
 }
@@ -35,61 +52,35 @@ export default {
 
 <style scoped>
 
-
+h1 {
+    width: 600px;
+}
 
 .container {
-    width: 600px;
-    margin: auto;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: 150px 350px;
-    grid-template-areas: 
-      "h h h h h h"
-      "m m m m m m";
-}
-
-header {
-    grid-area: h;
-    width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
 }
 
-.start-game-button {
-    display: inline-block;
+.chooser-container {
+    width: 800px;
+    display: flex;
+    flex-direction: row;
+}
+
+.chooser-container > div {
+    width: 400px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+button {
     height: 50px;
-    width: 100px;
-    font-size: 80%;
-    color: rgba(255,255,255,.9);
-    text-shadow: #2e7ebd 0 1px 2px;
-    text-decoration: none;
-    text-align: center;
-    line-height: 1.1;
-    white-space: pre-line;
-    padding: .7em 0;
-    border: 1px solid;
-    border-color: #60a3d8 #2970a9 #2970a9 #60a3d8;
-    border-radius: 6px;
-    outline: none;
-    background: #60a3d8 linear-gradient(#89bbe2, #60a3d8 50%, #378bce);
-    box-shadow: inset rgba(255,255,255,.5) 1px 1px;
-}
-
-.start-game-button:hover {
-    color: rgb(255,255,255);
-    background-image: linear-gradient(#9dc7e7, #74afdd 50%, #378bce);
-    cursor: pointer;
-}
-
-main {
-    grid-area: m;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 </style>
+
