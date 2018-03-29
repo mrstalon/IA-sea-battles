@@ -5,7 +5,7 @@ const ejs = require('ejs');
 
 const app = express();
 const HOST = '0.0.0.0';
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 const STATIC_PATH = path.resolve(__dirname, '../client-dist/static');
 const VIEWS_PATH = path.resolve(__dirname, '../client-dist');
 
