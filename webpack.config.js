@@ -1,13 +1,14 @@
 const path = require('path');
 const webpack = require('webpack');
-
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
-    entry: './src/main.js',
+    entry: './client/main.js',
     output: {
-        path: path.resolve(__dirname, './dist'),
-        publicPath: '/dist/',
-        filename: 'build.js',
+        path: path.resolve(__dirname, './client-dist'),
+        publicPath: '/',
+        filename: 'static/build-[hash].js',
     },
     module: {
         rules: [
@@ -34,7 +35,8 @@ module.exports = {
                 test: /\.(png|jpg|gif|svg)$/,
                 loader: 'file-loader',
                 options: {
-                    name: '[name].[ext]?[hash]',
+                    name: '[name]-[hash].[ext]',
+                    outputPath: 'static/img/'
                 },
             },
         ],
@@ -54,6 +56,13 @@ module.exports = {
         hints: false,
     },
     devtool: '#eval-source-map',
+    plugins: [
+        new HtmlWebpackPlugin({
+            filename: 'index.html',
+            template: 'client/index.html'
+        }),
+        new CleanWebpackPlugin(['client-dist']),
+    ]
 };
 
 if (process.env.NODE_ENV === 'production') {

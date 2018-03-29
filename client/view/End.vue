@@ -8,12 +8,10 @@
 
 
 <script>
-import {router} from '../main';
-
 export default {
     methods: {
         returnToMenu() {
-            router.push('/');
+            this.$router.push('/');
         }
     },
     data() {
